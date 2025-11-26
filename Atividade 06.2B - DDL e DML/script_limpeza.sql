@@ -1,0 +1,117 @@
+CREATE DATABASE EmpresaLimpeza;
+USE EmpresaLimpeza;
+
+CREATE TABLE CATEGORIA (
+    CodCat INT NOT NULL,
+    DescCat VARCHAR(100) NOT NULL,
+    CONSTRAINT PK_CATEGORIA PRIMARY KEY (CodCat)
+);
+
+CREATE TABLE PRODUTO (
+    CodProd INT NOT NULL,
+    NomeProd VARCHAR(100) NOT NULL,
+    PrecoProd DECIMAL(10, 2) NOT NULL,
+    CodCat INT NOT NULL, 
+    CONSTRAINT PK_PRODUTO PRIMARY KEY (CodProd),
+    CONSTRAINT FK_PROD_CAT FOREIGN KEY (CodCat) REFERENCES CATEGORIA (CodCat)
+);
+
+CREATE TABLE CLIENTE (
+    CodCli INT NOT NULL,
+    NomeCli VARCHAR(100) NOT NULL,
+    FoneCli VARCHAR(15),
+    EndCli VARCHAR(200),
+    LimtCredCli DECIMAL(10, 2),
+    StatusCli CHAR(1) NOT NULL,
+    CONSTRAINT PK_CLIENTE PRIMARY KEY (CodCli)
+);
+
+CREATE TABLE PEDIDO (
+    NumPed INT NOT NULL,
+    DtElabPed DATE NOT NULL,
+    CodCli INT NOT NULL, 
+    CONSTRAINT PK_PEDIDO PRIMARY KEY (NumPed),
+    CONSTRAINT FK_PEDIDO_CLIENTE FOREIGN KEY (CodCli) REFERENCES CLIENTE (CodCli)
+);
+
+CREATE TABLE PEDIDOPRODUTO (
+    NumPed INT NOT NULL, 
+    CodProd INT NOT NULL, 
+    QtdeItemProd INT NOT NULL,
+    CONSTRAINT PK_PEDIDOPROD PRIMARY KEY (NumPed, CodProd),
+    CONSTRAINT FK_PP_PEDIDO FOREIGN KEY (NumPed) REFERENCES PEDIDO (NumPed),
+    CONSTRAINT FK_PP_PRODUTO FOREIGN KEY (CodProd) REFERENCES PRODUTO (CodProd)
+);
+
+ALTER TABLE CLIENTE
+ADD EmailCli VARCHAR(150);
+
+
+USE EmpresaLimpeza;
+
+INSERT INTO CATEGORIA (CodCat, DescCat) VALUES
+(1, 'Limpeza Geral'),
+(2, 'Aromatizantes'),
+(3, 'Desinfetantes');
+
+INSERT INTO CLIENTE (CodCli, NomeCli, FoneCli, EndCli, LimtCredCli, StatusCli, EmailCli) VALUES
+(101, 'João Silva', '(11) 98765-4321', 'Rua A, 123', 500.00, 'A', 'joao.s@email.com'),
+(102, 'Maria Souza', '(21) 99876-5432', 'Av B, 456', 800.00, 'A', 'maria.s@email.com'),
+(103, 'Empresa Beta', '(31) 3232-1010', 'Praça C, 789', 1200.00, 'I', 'beta.e@email.com');
+
+INSERT INTO PRODUTO (CodProd, NomeProd, PrecoProd, CodCat) VALUES
+(201, 'Detergente Neutro', 4.50, 1),
+(202, 'Álcool em Gel 70%', 12.00, 3),
+(203, 'Odorizador Lavanda', 8.90, 2);
+
+INSERT INTO PEDIDO (NumPed, DtElabPed, CodCli) VALUES
+(1, '2025-10-20', 101),
+(2, '2025-10-21', 102),
+(3, '2025-10-22', 101);
+
+INSERT INTO PEDIDOPRODUTO (NumPed, CodProd, QtdeItemProd) VALUES
+(1, 201, 10), 
+(2, 202, 5),  
+(3, 201, 20); 
+
+UPDATE PRODUTO
+SET CodCat = 1
+WHERE CodProd = 202;
+
+DELETE FROM PEDIDOPRODUTO
+WHERE NumPed = 1 AND CodProd = 201;
+
+UPDATE CATEGORIA
+SET DescCat = 'Aromatizantes Premium'
+WHERE CodCat = 2;
+
+UPDATE CLIENTE
+SET StatusCli = 'A', LimtCredCli = 1500.00
+WHERE CodCli = 103;
+
+UPDATE PRODUTO
+SET PrecoProd = 4.99
+WHERE CodProd = 201;
+
+UPDATE PEDIDO
+SET DtElabPed = '2025-10-23'
+WHERE NumPed = 2;
+
+UPDATE PEDIDOPRODUTO
+SET QtdeItemProd = 25
+WHERE NumPed = 3 AND CodProd = 201;
+
+DELETE FROM CATEGORIA
+WHERE CodCat = 3;
+
+DELETE FROM CLIENTE
+WHERE CodCli = 103;
+
+DELETE FROM PRODUTO
+WHERE CodProd = 203;
+
+DELETE FROM PEDIDO
+WHERE NumPed = 1;
+
+DELETE FROM PEDIDOPRODUTO
+WHERE NumPed = 2 AND CodProd = 202;
